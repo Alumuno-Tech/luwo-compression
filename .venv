@@ -1,0 +1,7 @@
+{{
+  "languages": {
+    "Python": {
+      "formatter": { "language_server": { "name": "ruff" } }
+    }
+  }
+}

@@ -60,3 +60,13 @@ def test_sha_footer_detects_tampering():
         assert "SHA-256" in str(e) or "corrupted" in str(e) or "magic" in str(e)
 
 
+
+def test_nested_objects_do_not_crash():
+    recs = [{"meta": {"nested": True}}, {"meta": [1, 2, 3]}, {"meta": "plain"}]
+    assert decompress_bytes(compress_records(recs)) == recs
+
+def test_bool_number_mix_preserves_types():
+    recs = [{"flag": True}, {"flag": 5}, {"flag": False}, {"flag": 7}]
+    out = decompress_bytes(compress_records(recs))
+    assert out == recs
+    assert out[0]["flag"] is True and out[1]["flag"] == 5
