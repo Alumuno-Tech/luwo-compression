@@ -173,26 +173,63 @@ def decode_dict_col(blob: bytes, count: int) -> list:
 
 
 # ── RAW STR: null bitmap + length-prefixed JSON-escaped payloads ──
+STR_DICT_LIMIT = 4000
+
+
 def encode_str_col(values: list[Any]) -> bytes:
     nulls = _null_bitmap(values)
     body = bytearray()
-    for v in values:
-        if v is not None:
-            enc = json.dumps(v).encode("utf-8")
+    canon = [None if v is None else json.dumps(v) for v in values]
+    uniques = {c for c in canon if c is not None}
+    if len(uniques) <= STR_DICT_LIMIT:
+        # v0.2 dictionary variant: 0x01 + table + 2-byte indices
+        body.append(0x01)
+        table = sorted(uniques)
+        idx = {s: i for i, s in enumerate(table)}
+        body += struct.pack(">H", len(table))
+        for s in table:
+            enc = s.encode("utf-8")
             body += struct.pack(">I", len(enc)) + enc
+        for c in canon:
+            if c is not None:
+                body += struct.pack(">H", idx[c])
+    else:
+        # raw path (original format) behind variant byte 0x00
+        body.append(0x00)
+        for c in canon:
+            if c is not None:
+                enc = c.encode("utf-8")
+                body += struct.pack(">I", len(enc)) + enc
     return nulls + bytes(body)
 
 
 def decode_str_col(blob: bytes, count: int) -> list:
     nb = (count + 7) // 8
     nulls, off = blob[:nb], nb
-    out = []
+    variant = blob[off]
+    off += 1
+    out = [None] * count
+    if variant == 0x01:
+        (n_table,) = struct.unpack_from(">H", blob, off)
+        off += 2
+        table = []
+        for _ in range(n_table):
+            (ln,) = struct.unpack_from(">I", blob, off)
+            off += 4
+            table.append(blob[off:off + ln].decode("utf-8"))
+            off += ln
+        for i in range(count):
+            if _is_null(nulls, i):
+                continue
+            (idx,) = struct.unpack_from(">H", blob, off)
+            off += 2
+            out[i] = json.loads(table[idx])
+        return out
     for i in range(count):
         if _is_null(nulls, i):
-            out.append(None)
             continue
         (ln,) = struct.unpack_from(">I", blob, off)
         off += 4
-        out.append(json.loads(blob[off:off + ln].decode("utf-8")))
+        out[i] = json.loads(blob[off:off + ln].decode("utf-8"))
         off += ln
     return out
