@@ -10,6 +10,7 @@ $LUWO — For Luna, authored by JAXW01F
 """
 import gzip
 import hashlib
+import zstandard as zstd
 import json
 import struct
 import time
@@ -25,6 +26,7 @@ from .codec.block import (
 from .codec.column_picker import infer_type
 
 MAGIC = b"LUWOv7\x00"
+MAGIC_Z = b"LUWOZ\x00"
 VERSION = 1
 
 ENCODERS = {T_INT: encode_int_col, T_FLOAT: encode_float_col,
@@ -75,10 +77,14 @@ def compress_records(records: list) -> bytes:
         payload += struct.pack(">I", len(blob)) + blob
 
     digest = hashlib.sha256(bytes(payload)).digest()
-    return bytes(payload) + digest
+    inner = bytes(payload) + digest
+    packed = MAGIC_Z + zstd.compress(inner, level=19)
+    return packed if len(packed) < len(inner) else inner
 
 
 def decompress_bytes(data: bytes) -> list:
+    if data.startswith(MAGIC_Z):
+        data = zstd.decompress(data[len(MAGIC_Z):])
     if not data.startswith(MAGIC):
         raise ValueError("not a LUWO archive (bad magic)")
     if len(data) < len(MAGIC) + 32:

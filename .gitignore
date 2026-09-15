@@ -9,3 +9,5 @@ venv/
 bench_data/
 out*.luwo
 restored*.jsonl
+*.save*
+*.bak*
