@@ -32,6 +32,19 @@ Built by one engineer. Benchmarked honestly. Iterating weekly.
 | zstd -19 | 93.4% | — |
 
 v0.3 trades throughput for ratio (zstd level-19 final pass). Tunable per workload
+---
+### Real Data Bench — 476 MB of live LUWONODE telemetry
+
+476 MB of real autonomous-node telemetry (868k records from a sovereign trading node). Same engine, no retuning.
+
+| Engine | Reduction | Throughput | Lossless |
+|---|---|---|---|
+| **LUWO-V7 (v0.3 entropy stage)** | **93.0%** | 5.4 MB/s | ✓ beats zstd-22 |
+| zstd -22 (max level) | 92.5% | 2.3 MB/s | ✓ |
+| zstd -19 | 92.4% | 4.4 MB/s | ✓ |
+| gzip -9 | 89.8% | — | ✓ |
+
+> LUWO holds the belt on BOTH synthetic AND real sovereign-node telemetry. Byte-exact, SHA-256 sealed.
 
 Numbers are stamped with SHA-256 in the provenance ledger. No inflation.
 
