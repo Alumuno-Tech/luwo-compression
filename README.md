@@ -26,12 +26,13 @@ Built by one engineer. Benchmarked honestly. Iterating weekly.
 
 | Engine | Reduction | Throughput |
 |---|---|---|
-| LUWO-V7 v0.3 (entropy stage) - curent** |  **95.9%** | 25.7 MB/s |
+| LUWO-V7 v0.3 (entropy stage) - curent* |  **95.9%** | 25.7 MB/s |
 | LUWO-V7 v0.2 (STR dict) | 85.6% | 55.5 MB/s |
 | gzip -9 | ~91% | — |
 | zstd -19 | 93.4% | — |
 
 v0.3 trades throughput for ratio (zstd level-19 final pass). Tunable per workload
+
 Numbers are stamped with SHA-256 in the provenance ledger. No inflation.
 
 ## Quickstart
