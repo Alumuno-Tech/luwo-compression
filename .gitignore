@@ -11,3 +11,4 @@ out*.luwo
 restored*.jsonl
 *.save*
 *.bak*
+*.luwo
