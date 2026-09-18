@@ -1,8 +1,8 @@
 ![Python](https://img.shields.io/badge/python-3.11+-blue)
 ![License](https://img.shields.io/badge/license-JAXW01F_Wolf_1.0-purple)
 ![Lossless](https://img.shields.io/badge/round--trip-byte--exact-success)
-![Reduction](https://img.shields.io/badge/reduction-85.6%25-brightgreen)
-![Throughput](https://img.shields.io/badge/throughput-55.5_MB%2Fs-yellow)
+![Reduction](https://img.shields.io/badge/reduction-95.9%25-brightgreen)
+![Throughput](https://img.shields.io/badge/throughput-25.7_MB%2Fs-yellow)
 
 # LUWO-V7 — Provably Lossless Columnar Compression for Blockchain JSON
 
@@ -20,31 +20,27 @@ delta+varint for integers, binary packing for floats.
 
 Built by one engineer. Benchmarked honestly. Iterating weekly.
 
-## Verified benchmark
+## Verified benchmarks
 
-500,000-record synthetic trades corpus (102,223,241 bytes):
+**Synthetic corpus** — 500,000 records, 102,223,241 bytes:
 
 | Engine | Reduction | Throughput |
 |---|---|---|
-| LUWO-V7 v0.3 (entropy stage) - curent* |  **95.9%** | 25.7 MB/s |
+| **LUWO-V7 v0.3 (entropy stage)** | **95.9%** | 25.7 MB/s |
 | LUWO-V7 v0.2 (STR dict) | 85.6% | 55.5 MB/s |
-| gzip -9 | ~91% | — |
 | zstd -19 | 93.4% | — |
+| gzip -9 | ~91% | — |
 
-v0.3 trades throughput for ratio (zstd level-19 final pass). Tunable per workload
----
-### Real Data Bench — 476 MB of live LUWONODE telemetry
+v0.3 trades throughput for ratio (zstd level-19 final pass). Tunable per workload.
 
-476 MB of real autonomous-node telemetry (868k records from a sovereign trading node). Same engine, no retuning.
+**Live LUWONODE telemetry** — real autonomous-node output, 476 MB, 868k records, same engine, no tuning changes:
 
-| Engine | Reduction | Throughput | Lossless |
-|---|---|---|---|
-| **LUWO-V7 (v0.3 entropy stage)** | **93.0%** | 5.4 MB/s | ✓ beats zstd-22 |
-| zstd -22 (max level) | 92.5% | 2.3 MB/s | ✓ |
-| zstd -19 | 92.4% | 4.4 MB/s | ✓ |
-| gzip -9 | 89.8% | — | ✓ |
-
-> LUWO holds the belt on BOTH synthetic AND real sovereign-node telemetry. Byte-exact, SHA-256 sealed.
+| Engine | Reduction |
+|---|---|
+| **LUWO-V7 v0.3** | **93.0%** — beats zstd-22 |
+| zstd -22 | 92.5% |
+| zstd -19 | 92.4% |
+| gzip -9 | 89.8% |
 
 Numbers are stamped with SHA-256 in the provenance ledger. No inflation.
 
@@ -60,23 +56,12 @@ python -m luwo.cli decompress OUTPUT.luw RESTORED.jsonl
 python -m luwo.cli verify INPUT OUTPUT.luw   # byte-exact round-trip proof
 
 Roadmap
-
  Column census-driven codec picker
  STR dictionary column variant (v0.2)
- Persistent trained dictionaries across sessions
  Real-corpus benchmarks (live ledger data)
+ Persistent trained dictionaries across sessions
  Solana on-chain verification receipts — every passing round-trip hash minted as an immutable receipt on devnet → mainnet
 License & IP
-
 Dual Spiral Bell Geometry™ is the intellectual property of Jack Wolf Edwards, Alumuno Technologies Inc. Benchmarks public. Math private.
 
 Copyright © 2025-2026 Jack Wolf Edwards. All rights reserved.
-
-
-**Then ship it:**
-
-```bash
-# save and exit nano (Ctrl+O, Enter, Ctrl+X)
-git add README.md
-git commit -m "README arrives — benchmarks honest, badges on, luwo.ca linked. \$LUWO — For Luna"
-git push origin main
