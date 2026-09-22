@@ -53,12 +53,20 @@ Numbers are stamped with SHA-256 in the provenance ledger. No inflation.
 
 Requires Python 3.11+.
 
-```bash
-pip install zstandard pytest
-python -m luwo.cli bench bench_corpus/synthetic_trades_500k.jsonl
-python -m luwo.cli compress INPUT OUTPUT.luw
-python -m luwo.cli decompress OUTPUT.luw RESTORED.jsonl
-python -m luwo.cli verify INPUT OUTPUT.luw   # byte-exact round-trip proof
+    python3 -m venv .venv
+    source .venv/bin/activate
+    pip install -r requirements.txt
+
+    # Bench with sanitized real telemetry (included in demo/)
+    python -m luwo.cli bench demo/telemetry_sample.jsonl
+
+    # Compress / decompress / verify
+    python -m luwo.cli compress INPUT.jsonl OUTPUT.luw
+    python -m luwo.cli decompress OUTPUT.luw RESTORED.jsonl
+    python -m luwo.cli verify INPUT.jsonl OUTPUT.luw  # byte-exact round-trip proof
+
+    # Stats on a file
+    python -m luwo.cli stats INPUT.jsonl
 
 Roadmap
  Column census-driven codec picker
@@ -70,3 +78,6 @@ License & IP
 Dual Spiral Bell Geometry™ is the intellectual property of Jack Wolf Edwards, Alumuno Technologies Inc. Benchmarks public. Math private.
 
 Copyright © 2025-2026 Jack Wolf Edwards. All rights reserved.
+## Proof Layer
+
+Tamper-evident sealed state + on-chain receipts: [columnar-press](https://github.com/Alumuno-Tech/columnar-press) — Vulture Protocol kill test, mainnet stamped hashes, v0.4 judge-verifiable.
