@@ -68,16 +68,16 @@ Requires Python 3.11+.
     # Stats on a file
     python -m luwo.cli stats INPUT.jsonl
 
-Roadmap
- Column census-driven codec picker
- STR dictionary column variant (v0.2)
- Real-corpus benchmarks (live ledger data)
- Persistent trained dictionaries across sessions
- Solana on-chain verification receipts — every passing round-trip hash minted as an immutable receipt on devnet → mainnet
-License & IP
+## Roadmap
+- Column census-driven codec picker
+- STR dictionary column variant (v0.2)
+- Real-corpus benchmarks (live ledger data)
+- Persistent trained dictionaries across sessions
+- Solana on-chain verification receipts — every passing round-trip hash minted as an immutable receipt on devnet → mainnet
+
+## License & IP
 Dual Spiral Bell Geometry™ is the intellectual property of Jack Wolf Edwards, Alumuno Technologies Inc. Benchmarks public. Math private.
-
 Copyright © 2025-2026 Jack Wolf Edwards. All rights reserved.
-## Proof Layer
 
+## Proof Layer
 Tamper-evident sealed state + on-chain receipts: [columnar-press](https://github.com/Alumuno-Tech/columnar-press) — Vulture Protocol kill test, mainnet stamped hashes, v0.4 judge-verifiable.
