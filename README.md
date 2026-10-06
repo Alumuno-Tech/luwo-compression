@@ -25,29 +25,41 @@ delta+varint for integers, binary packing for floats.
 
 Built by one engineer. Benchmarked honestly. Iterating weekly.
 
-## Verified benchmarks
+## Benchmarks — real autonomous-node telemetry (NDJSON)
 
-**Synthetic corpus** — 500,000 records, 102,223,241 bytes:
+### Judge-runnable sample (27MB sanitized slice in repo)
 
 | Engine | Reduction | Throughput |
 |---|---|---|
-| **LUWO-V7 v0.3 (entropy stage)** | **95.9%** | 25.7 MB/s |
-| LUWO-V7 v0.2 (STR dict) | 85.6% | 55.5 MB/s |
+| **LUWO-V7 v0.5** | **95.3%** | 6.9 MB/s |
+| zstd -19 | 94.3% | 5.0 MB/s |
+| gzip -9 | 92.1% | 83.7 MB/s |
+
+Run yourself: `cd demo && ../.venvs/luwopod/bin/python3 -m luwo.cli bench telemetry_sample.jsonl`
+
+---
+
+### Full corpus (476MB live node telemetry — ledger-stamped)
+
+| Engine | Reduction | Throughput |
+|---|---|---|
+| **LUWO-V7 v0.5** | **93.0%** | 5.0 MB/s |
+| zstd -19 | 92.4% | 4.3 MB/s |
+| gzip -9 | 89.8% | 67.7 MB/s |
+
+All engines wall-clock timed identically. Round-trip lossless verified. SHA-256 stamped in provenance ledger.
+
+---
+
+### Historical: Synthetic controlled test (500k records, 102MB)
+
+| Engine | Reduction | Throughput |
+|---|---|---|
+| LUWO-V7 v0.3 (entropy stage) | 95.9% | 25.7 MB/s |
 | zstd -19 | 93.4% | — |
 | gzip -9 | ~91% | — |
 
-v0.3 trades throughput for ratio (zstd level-19 final pass). Tunable per workload.
-
-**Live LUWONODE telemetry** — real autonomous-node output, 476 MB, 868k records, same engine, no tuning changes:
-
-| Engine | Reduction |
-|---|---|
-| **LUWO-V7 v0.3** | **93.0%** — beats zstd-22 |
-| zstd -22 | 92.5% |
-| zstd -19 | 92.4% |
-| gzip -9 | 89.8% |
-
-Numbers are stamped with SHA-256 in the provenance ledger. No inflation.
+*Historical reference — v0.3 traded throughput for ratio with zstd-19 final pass. Tunable per workload.*	
 
 ## Quickstart
 

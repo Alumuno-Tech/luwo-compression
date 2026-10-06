@@ -81,23 +81,36 @@ def cmd_verify(args):
 
 def cmd_bench(args):
     raw_bytes = Path(args.ndjson).read_bytes()
-    gz = gzip.compress(raw_bytes, compresslevel=9)
-    zc = zstd.ZstdCompressor(level=19)
-    zz = zc.compress(raw_bytes)
     recs = load_ndjson(args.ndjson)
+
+    t0 = time.perf_counter()
+    gz = gzip.compress(raw_bytes, compresslevel=9)
+    t_gz = time.perf_counter() - t0
+
+    zc = zstd.ZstdCompressor(level=19)
+    t0 = time.perf_counter()
+    zz = zc.compress(raw_bytes)
+    t_zs = time.perf_counter() - t0
+
     t0 = time.perf_counter()
     luwo = compress_records(recs)
     t_luwo = time.perf_counter() - t0
+
     raw_n = len(raw_bytes)
+    mb_raw = raw_n / 1_048_576
     print(f"\nLUWO v7 BENCH — {args.ndjson}")
     print(f"{'ENGINE':<12}{'BYTES':>12}{'VS RAW':>10}{'MB/s':>8}")
-    for name, blob in [("raw", raw_bytes), ("gzip-9", gz),
-                       ("zstd-19", zz), ("LUWO", luwo)]:
+    rows = [
+        ("raw", raw_bytes, 0.0, 0.0),
+        ("gzip-9", gz, t_gz, len(gz)),
+        ("zstd-19", zz, t_zs, len(zz)),
+        ("LUWO", luwo, t_luwo, len(luwo)),
+    ]
+    for name, blob, dt, _ in rows:
         pct = (1 - len(blob) / raw_n) * 100 if name != "raw" else 0.0
-        mbps = (raw_n / 1_048_576) / max(t_luwo, 1e-9) if name == "LUWO" else 0
+        mbps = mb_raw / max(dt, 1e-9) if name != "raw" else 0.0
         print(f"{name:<12}{len(blob):>12,}{pct:>9.1f}%{mbps:>8.1f}")
     print("$LUWO — For Luna")
-
 
 import json  # noqa: E402  (used by cmd_decompress)
 
