@@ -25,6 +25,17 @@ delta+varint for integers, binary packing for floats.
 
 Built by one engineer. Benchmarked honestly. Iterating weekly.
 
+## Why not just use zstd?
+
+Because zstd is the last mile, not the road. Our engine understands structure first — every column gets typed, dictionary-encoded, delta-packed, and only then does the residual stream hit an entropy stage. zstd alone squeezes bytes; it doesn't know what the bytes are.
+
+Our overhead over raw zstd-19 comes with what zstd structurally cannot offer:
+- Byte-exact round-trip verification against a SHA-256 seal
+- Tamper-evidence that survives SIGKILL mid-write (proven by the Vulture Protocol in this repo)
+- A Solana mainnet receipt anchoring every archive to an immutable on-chain record
+
+You're not paying half a percent of ratio. You're getting provability zstd structurally cannot offer.
+
 ## Benchmarks — real autonomous-node telemetry (NDJSON)
 
 ### Judge-runnable sample (27MB sanitized slice in repo)
